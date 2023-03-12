@@ -1,0 +1,6 @@
+union SearchResponse = ArtistResponse | AlbumResponse
+
+enum SearchType {
+    ARTIST
+    ALBUM
+}

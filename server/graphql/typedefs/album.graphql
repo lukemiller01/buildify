@@ -1,0 +1,36 @@
+type Album {
+    id: String
+    album_type: AlbumType
+    artists: [Artist]
+    available_markets: [String]
+    href: String
+    images: [Image]
+    label: String
+    name: String
+    popularity: Int
+    release_date: String
+    release_date_precision: String
+    total_tracks: Int
+    type: String
+    uri: String
+}
+
+enum AlbumType {
+    ALBUM
+    SINGLE
+    COMPILATION
+}
+
+type AlbumResults implements PagedResponse {
+    href:String
+    items: [Album]
+    limit: Int
+    next: String
+    offset: Int
+    previous: String
+    total: Int
+}
+
+type AlbumResponse {
+    albums: AlbumResults
+}

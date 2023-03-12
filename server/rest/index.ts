@@ -6,7 +6,7 @@ dotenv.config();
 const clientID: string = process.env.SPOTIFY_CLIENT_ID ?? '';
 const clientSecret: string = process.env.SPOTIFY_CLIENT_SECRET ?? '';
 
-const base64Encode = (s:any) => Buffer.from(s).toString('base64');
+const base64Encode = (s:string) => Buffer.from(s).toString('base64');
 
 const fetchToken = async () => {
     const response = await fetch('https://accounts.spotify.com/api/token', {
@@ -17,6 +17,7 @@ const fetchToken = async () => {
             "Content-Type": 'application/x-www-form-urlencoded;charset=UTF-8'
         }
     })
+    // TODO: change any
     const token = (await response.json() as unknown as any)
     return token;
 }
@@ -37,7 +38,6 @@ export const _fetch = async (url:string) => {
         response = await getResponse(url,token);
     }
     if(!token || response.status === 401) {
-        console.log('no token')
         token = await fetchToken();
         response = await getResponse(url, token);
     }

@@ -1,9 +1,14 @@
 import { search } from "../../../rest/search.js";
 
+interface FunctionArguments {
+    q: string
+    type: string
+}
+
 // Resolver function is void
 const artistQueries = {
-    artists: async( _:any, {q}:any, context:any) => {
-        return await search(q, 'ARTIST');
+    search: async( _:any, {q, type}:FunctionArguments, context:any) => {
+        return await search(q, type);
     }
 }
 
