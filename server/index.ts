@@ -5,8 +5,10 @@ import cors from 'cors'
 import pkg from 'body-parser';
 const { json } = pkg;
 import { expressMiddleware } from '@apollo/server/express4';
+import dotenv from 'dotenv';
 
 const PORT = 5001;
+dotenv.config();
 
 async function startApolloServer() {
     const app = express();

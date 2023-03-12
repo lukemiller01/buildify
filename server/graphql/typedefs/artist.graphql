@@ -8,3 +8,17 @@ type Artist {
     href: String
     images: [Image]
 }
+
+type ArtistResults implements PagedResponse {
+    href:String
+    limit:Int
+    next:String
+    offset:Int
+    previous:String
+    total:Int
+    items:[Artist]
+}
+
+type ArtistResponse {
+    artists: ArtistResults
+}

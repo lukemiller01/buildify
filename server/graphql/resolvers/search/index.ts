@@ -1,0 +1,1 @@
+export { default as artistQueries } from './queries.js';

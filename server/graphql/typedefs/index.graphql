@@ -1,3 +1,3 @@
 type Query {
-    artists: [Artist]
+    artists(q: String!): ArtistResponse
 }

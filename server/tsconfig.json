@@ -11,5 +11,5 @@
     "esm": true,
     "require": ["tsconfig-paths/register"],
   },
-  "include": ["**/*.ts", "**/*.tsx"],
+  "include": ["**/*.ts", "**/*.tsx", "apollo.config.js"],
 }

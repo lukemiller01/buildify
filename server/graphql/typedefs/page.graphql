@@ -1,0 +1,8 @@
+interface PagedResponse {
+    href:String
+    limit:Int
+    next:String
+    offset:Int
+    previous:String
+    total:Int
+}
