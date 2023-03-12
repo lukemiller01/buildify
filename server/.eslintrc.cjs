@@ -5,5 +5,8 @@ module.exports = {
     root: true,
     env: {
       node: true,
-    }
+    },
+    resolve: {
+      extensions: [".ts"]
+    },
   };

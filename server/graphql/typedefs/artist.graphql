@@ -1,0 +1,10 @@
+type Artist {
+    name:String!
+    id:ID!
+    popularity:Int
+    genres:[String]
+    type: String
+    uri: String
+    href: String
+    images: [Image]
+}
