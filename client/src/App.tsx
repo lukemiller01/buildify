@@ -1,33 +1,58 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import './App.css'
+import './App.css';
+import React, { useState } from 'react';
+
+// GraphQL
+import { gql, useQuery } from '@apollo/client';
 
 function App() {
-  const [count, setCount] = useState(0)
+
+  const [ search , setSearch ] = useState('');
+
+  async function handleSubmit(e:React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+  }
+
+  const SEARCH = gql`
+    query Query($q: String!, $type: SearchType!) {
+      search(q: $q, type: $type) {
+        ... on ArtistResponse {
+          artists {
+            items {
+              name
+              popularity
+              id
+            }
+          }
+        }
+      }
+    }
+  `;
+
+  const { loading, error, data } = useQuery(SEARCH, {
+    variables: {
+      "q": "Kendrick",
+      "type": "ARTIST"
+    },
+  });
+  
+  if(data) {
+    console.log(data["search"]["artists"]['items'])
+  }
 
   return (
-    <div className="App">
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src="/vite.svg" className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://reactjs.org" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+    <>
+    <div className='flex flex-col m-4'>
+      <div className=' text-center'>
+        <h1>Buildify</h1>
+        <p>Generate Spotify playlists with your favorite songs</p>
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+      <form className='border-2 border-emerald rounded-xl flex items-center flex-col p-4 gap-4' onSubmit={(e:React.FormEvent<HTMLFormElement>) => handleSubmit(e)}>
+        <input type="text" placeholder='Seach for an artist' className=' p-1' onChange={(e:React.ChangeEvent<HTMLInputElement>) => setSearch(e.target.value)}></input>
+        <button type="submit" value="Submit" className=' bg-emerald border-white border-2 rounded-md px-4 py-1'>Button</button>
+      </form>
+      <p>{data? JSON.stringify(data["search"]["artists"]['items']): ''}</p>
     </div>
+    </>
   )
 }
 

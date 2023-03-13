@@ -38,7 +38,6 @@ interface Artist {
 const resolvers = {
     SearchResponse: { // ! Currently, context and info isn't being used, so defining their types is unimportant.
         __resolveType(obj:Object,context:any,info:any) {
-            console.log(obj)
             if(obj.artists) {
                 return "ArtistResponse"
             }
@@ -54,7 +53,7 @@ const resolvers = {
         top_tracks: async (parent:Artist) => {
             return (await topTracks(parent.id)).tracks;
         }
-    }
+    },
 }
 
 export default resolvers;
