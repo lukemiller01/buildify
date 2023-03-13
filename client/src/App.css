@@ -13,10 +13,21 @@ h1 {
     color: white;
 }
 
+h2 {
+    font-family: 'Circular';
+    font-size: 32px;
+    font-weight: bold;
+    color: white;
+}
+
 p {
     font-family: 'Circular';
     font-size: 18px;
     color: white;
+}
+
+ol {
+    list-style: auto;
 }
 
 @font-face {
