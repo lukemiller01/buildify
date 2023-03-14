@@ -10,6 +10,7 @@ module.exports = {
       current: 'currentColor',
       'jet': '#222326',
       'emerald': '#1db954',
+      'emerald-tint': '#4ac776',
 
       'white': '#ffffff',
       'black': '#000000',

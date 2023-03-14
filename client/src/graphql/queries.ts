@@ -30,23 +30,23 @@ export const ARTIST_SEARCH = gql`
 // Top 20 albums
 // Artist name
 // 3 images (small, medium, large) for the album
-// TODO: add ID for keys in map functions 
 export const ALBUM_SEARCH = gql`
     query Query($q: String!, $type: SearchType!) {
-        search(q: $q, type: $type) {
-            ... on AlbumResponse {
-            albums {
-                items {
+    search(q: $q, type: $type) {
+        ... on AlbumResponse {
+        albums {
+            items {
+            id
+            name
+            artists {
                 name
-                artists {
-                    name
-                }
-                images {
-                    url
-                }
-                }
+            }
+            images {
+                url
             }
             }
         }
+        }
+    }
     }
 `;

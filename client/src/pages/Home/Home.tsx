@@ -1,4 +1,4 @@
-import React, { useState, Fragment } from "react";
+import React, { useState, useRef, Fragment, useEffect } from "react";
 
 // GraphQL
 import { useLazyQuery } from "@apollo/client";
@@ -10,12 +10,17 @@ import { Listbox, Transition } from "@headlessui/react";
 // Heroicons
 import { CheckIcon, ChevronUpDownIcon } from "@heroicons/react/20/solid";
 import Artist from "../../components/Artist";
+import Album from "../../components/Album";
 
 const selections = [{ type: "artist" }, { type: "album" }];
 
 const Home = () => {
   const [search, setSearch] = useState(""); // Sets the user's typed query
   const [selected, setSelected] = useState(selections[0]); // Sets the user's chosen search type
+  const [dataShown, setDataShown] = useState(false); // Sets if the album or artist data should be shown
+//   const [autoFocus, setAutoFocus] = useState(false);
+
+  const searchRef = useRef(null);
 
   // Lazy query (on button click).
   const [getArtist, artistResult] = useLazyQuery(ARTIST_SEARCH);
@@ -25,9 +30,17 @@ const Home = () => {
     e.preventDefault();
     if (selected.type === "artist") {
       getArtist({ variables: { q: search, type: "ARTIST" } });
+      setDataShown(false);
     } else if (selected.type === "album") {
       getAlbum({ variables: { q: search, type: "ALBUM" } });
+      setDataShown(true);
     }
+  }
+
+  function selectedChoice(e:{type: string}) {
+    setSelected(e);
+    // setAutoFocus(false);
+    // searchRef.current.focus();
   }
 
   return (
@@ -43,7 +56,7 @@ const Home = () => {
         >
           <div className="flex flex-row gap-4 items-center">
             <p className=" whitespace-nowrap">I'm looking for an</p>
-            <Listbox value={selected} onChange={setSelected}>
+            <Listbox value={selected} onChange={(e: {type: string}) => selectedChoice(e)}>
               <div className="relative">
                 <Listbox.Button className="relative w-[105px] cursor-default rounded-lg bg-white py-2 pl-3 pr-10 text-left">
                   <span className="block truncate">{selected.type}</span>
@@ -78,7 +91,7 @@ const Home = () => {
                               {person.type}
                             </span>
                             {selected ? (
-                              <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-amber-600">
+                              <span className="absolute inset-y-0 left-0 flex items-center pl-3">
                                 <CheckIcon
                                   className="h-5 w-5"
                                   aria-hidden="true"
@@ -97,23 +110,41 @@ const Home = () => {
             <input
               type="text"
               placeholder={selected.type}
-              className="relative w-full cursor-default rounded-lg bg-white py-2 pl-3 pr-3 text-left"
+              className="relative w-full cursor-default rounded-lg bg-white py-2 pl-3 pr-3 text-left focus:outline-none focus:ring-emerald focus:ring-2"
               onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                 setSearch(e.target.value)
               }
               value={search}
+              ref={searchRef}
             ></input>
           </div>
           <button
             type="submit"
             value="Submit"
-            className=" bg-emerald border-white border-2 rounded-md px-4 py-1"
+            className=" bg-emerald border-white border-2 rounded-md px-4 py-1 hover:bg-emerald-tint"
           >
             Go
           </button>
         </form>
-        <div className="flex flex-col mx-12 gap-8">
-          {artistResult.data
+        <div className="flex flex-col mx-12 gap-8 mt-8">
+          {dataShown
+            ? albumResult.data
+              ? albumResult.data["search"]["albums"]["items"].map(
+                  (album: any) => (
+                    <Album
+                      key={album["id"]}
+                      name={album["name"]}
+                      artist={album["artists"][0]["name"]}
+                      image={
+                        album["images"][0]
+                          ? album["images"][0]["url"]
+                          : "./user.svg"
+                      }
+                    />
+                  )
+                )
+              : null
+            : artistResult.data
             ? artistResult.data["search"]["artists"]["items"].map(
                 (artist: any) => (
                   <Artist
