@@ -1,4 +1,4 @@
-import React, { useState, useRef, Fragment, useEffect } from "react";
+import React, { useState, useRef, Fragment } from "react";
 
 // GraphQL
 import { useLazyQuery } from "@apollo/client";
@@ -9,10 +9,12 @@ import { Listbox, Transition } from "@headlessui/react";
 
 // Heroicons
 import { CheckIcon, ChevronUpDownIcon } from "@heroicons/react/20/solid";
-import Artist from "../../components/Artist";
-import Album from "../../components/Album";
+
+// Compponents
+import { Artist, LoadingArtist, Album, LoadingAlbum } from "../../components";
 
 const selections = [{ type: "artist" }, { type: "album" }];
+const loadingList:Array<number> = new Array(10).fill(0);
 
 const Home = () => {
   const [search, setSearch] = useState(""); // Sets the user's typed query
@@ -168,6 +170,8 @@ const Home = () => {
                 )
               )
             : null}
+            {artistResult.loading? loadingList.map((number, index) => (<LoadingArtist key={index}/>)) : null}
+            {albumResult.loading? loadingList.map((number, index) => (<LoadingAlbum key={index}/>)) : null}
         </div>
       </div>
     </>
