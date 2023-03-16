@@ -1,11 +1,3 @@
-// import type {Config} from 'jest';
-
-// const config: Config = {
-//   verbose: true,
-// };
-
-// export default config;
-
 import type { JestConfigWithTsJest } from 'ts-jest'
 
 const jestConfig: JestConfigWithTsJest = {
@@ -13,7 +5,7 @@ const jestConfig: JestConfigWithTsJest = {
   extensionsToTreatAsEsm: ['.ts'],
   moduleNameMapper: {
     '^(\\.{1,2}/.*)\\.js$': '$1',
-    '\\.(css|less)$': '../config/cssMock.ts'
+    '\\.(css|less)$': '/Users/miller/Documents/buildify/client/config/cssMock.ts'
   },
   transform: {
     // '^.+\\.[tj]sx?$' to process js/ts with `ts-jest`
@@ -25,6 +17,7 @@ const jestConfig: JestConfigWithTsJest = {
       },
     ],
   },
+  testEnvironment: 'jsdom'
 }
 
 export default jestConfig

@@ -17,7 +17,7 @@
     "jsx": "react-jsx",
     "types": ["jest", "node"]
   },
-  "include": ["src"],
+  "include": ["src", "test"],
   "references": [{ "path": "./tsconfig.node.json" }],
   "typeAcquisition": {
     "include": [
