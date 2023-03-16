@@ -32,6 +32,8 @@ const getResponse = async (url:string, token:any) => {
     return response;
 }
 
+// If the token is valid, get the response with the existing token.
+// If not, fetch a token from the Spotify API and get the response with the new token
 export const _fetch = async (url:string) => {
     let response:any = {}; // TODO: change "any"
     if(token) {

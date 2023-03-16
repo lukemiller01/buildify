@@ -5,11 +5,11 @@ interface FunctionArguments {
     type: string
 }
 
-// Resolver function is void
-const artistQueries = {
+// Type returns whether the query is an artist or album query
+const searchQueries = {
     search: async( _:any, {q, type}:FunctionArguments, context:any) => {
         return await search(q, type);
     }
 }
 
-export default artistQueries;
+export default searchQueries;

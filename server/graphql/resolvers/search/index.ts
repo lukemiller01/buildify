@@ -1,1 +1,1 @@
-export { default as artistQueries } from './queries.js';
+export { default as searchQueries } from './queries.js';

@@ -1,7 +1,7 @@
 import { topTracks } from "../../rest/search.js";
-import artistQueries from "./search/queries.js";
+import searchQueries from "./search/queries.js";
 
-// TODO: define item object
+// TODO: define items object
 interface Object {
     artists: {
         href: string
@@ -45,15 +45,15 @@ const resolvers = {
                 return "AlbumResponse"
             }
         }
-    },
+    }, // Because we're using unions and fragments, SearchResponse resolves to an object ArtistResponse or AlbumResponse type
     Query: {
-        ...artistQueries
-    },
+        ...searchQueries
+    }, // Returns the result from Spotify's REST API
     Artist: {
         top_tracks: async (parent:Artist) => {
             return (await topTracks(parent.id)).tracks;
         }
-    },
+    }, // Top tracks field for Artist type (resolver chaining)
 }
 
 export default resolvers;
