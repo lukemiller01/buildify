@@ -50,3 +50,36 @@ export const ALBUM_SEARCH = gql`
     }
     }
 `;
+
+// This query returns:
+// Top 20 tracks. For every track:
+// Track ID
+// Track name
+// Track artist(s)
+// Preview URL (30 second sound snippet)
+// Album name
+// Album image URL
+export const TRACK_SEARCH = gql`
+query Query($q: String!, $type: SearchType!) {
+    search(q: $q, type: $type) {
+      ... on TrackResponse {
+        tracks {
+          items {
+            id
+            name
+            artists {
+              name
+            }
+            preview_url
+            album {
+              name
+              images {
+                url
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+`;

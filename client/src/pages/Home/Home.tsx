@@ -1,8 +1,12 @@
-import React, { useState, useRef, Fragment } from "react";
+import React, { useState, Fragment } from "react";
 
 // GraphQL
 import { useLazyQuery } from "@apollo/client";
-import { ARTIST_SEARCH, ALBUM_SEARCH } from "../../graphql/queries";
+import {
+  ARTIST_SEARCH,
+  ALBUM_SEARCH,
+  TRACK_SEARCH,
+} from "../../graphql/queries";
 
 // Headless UI
 import { Listbox, Transition } from "@headlessui/react";
@@ -11,38 +15,44 @@ import { Listbox, Transition } from "@headlessui/react";
 import { CheckIcon, ChevronUpDownIcon } from "@heroicons/react/20/solid";
 
 // Compponents
-import { Artist, LoadingArtist, Album, LoadingAlbum } from "../../components";
+import {
+  Artist,
+  LoadingArtist,
+  Album,
+  LoadingAlbum,
+  Track,
+  LoadingTrack,
+} from "../../components";
 
-const selections = [{ type: "artist" }, { type: "album" }];
-const loadingList:Array<number> = new Array(10).fill(0);
+const selections = [{ type: "artist" }, { type: "album" }, { type: "song" }];
+const loadingList: Array<number> = new Array(10).fill(0);
 
 const Home = () => {
   const [search, setSearch] = useState(""); // Sets the user's typed query
   const [selected, setSelected] = useState(selections[0]); // Sets the user's chosen search type
-  const [dataShown, setDataShown] = useState(false); // Sets if the album or artist data should be shown
-//   const [autoFocus, setAutoFocus] = useState(false);
-
-  const searchRef = useRef(null);
+  const [dataShown, setDataShown] = useState(""); // Sets if the album or artist or track data should be shown
 
   // Lazy query (on button click).
   const [getArtist, artistResult] = useLazyQuery(ARTIST_SEARCH);
   const [getAlbum, albumResult] = useLazyQuery(ALBUM_SEARCH);
+  const [getTrack, trackResult] = useLazyQuery(TRACK_SEARCH);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     if (selected.type === "artist") {
       getArtist({ variables: { q: search, type: "ARTIST" } });
-      setDataShown(false);
+      setDataShown("artist");
     } else if (selected.type === "album") {
       getAlbum({ variables: { q: search, type: "ALBUM" } });
-      setDataShown(true);
+      setDataShown("album");
+    } else if (selected.type === "song") {
+      getTrack({ variables: { q: search, type: "TRACK" } });
+      setDataShown("track");
     }
   }
 
-  function selectedChoice(e:{type: string}) {
+  function selectedChoice(e: { type: string }) {
     setSelected(e);
-    // setAutoFocus(false);
-    // searchRef.current.focus();
   }
 
   return (
@@ -58,7 +68,10 @@ const Home = () => {
         >
           <div className="flex flex-row gap-4 items-center">
             <p className=" whitespace-nowrap">I'm looking for an</p>
-            <Listbox value={selected} onChange={(e: {type: string}) => selectedChoice(e)}>
+            <Listbox
+              value={selected}
+              onChange={(e: { type: string }) => selectedChoice(e)}
+            >
               <div className="relative">
                 <Listbox.Button className="relative w-[105px] cursor-default rounded-lg bg-white py-2 pl-3 pr-10 text-left">
                   <span className="block truncate">{selected.type}</span>
@@ -117,7 +130,6 @@ const Home = () => {
                 setSearch(e.target.value)
               }
               value={search}
-              ref={searchRef}
             ></input>
           </div>
           <button
@@ -129,7 +141,7 @@ const Home = () => {
           </button>
         </form>
         <div className="flex flex-col mx-12 gap-8 mt-8">
-          {dataShown
+          {dataShown === "album"
             ? albumResult.data
               ? albumResult.data["search"]["albums"]["items"].map(
                   (album: any) => (
@@ -145,33 +157,52 @@ const Home = () => {
                     />
                   )
                 )
-              : null
-            : artistResult.data
-            ? artistResult.data["search"]["artists"]["items"].map(
-                (artist: any) => (
-                  <Artist
-                    key={artist["id"]}
-                    name={artist["name"]}
-                    tracks={
-                      artist["top_tracks"].length > 2
-                        ? [
-                            artist["top_tracks"][0]["name"],
-                            artist["top_tracks"][1]["name"],
-                            artist["top_tracks"][2]["name"],
-                          ]
-                        : null
-                    }
-                    image={
-                      artist["images"][0]
-                        ? artist["images"][0]["url"]
-                        : "./user.svg"
-                    }
-                  />
+              : loadingList.map((number, index) => <LoadingAlbum key={index} />)
+            : dataShown === "artist"
+            ? artistResult.data
+              ? artistResult.data["search"]["artists"]["items"].map(
+                  (artist: any) => (
+                    <Artist
+                      key={artist["id"]}
+                      name={artist["name"]}
+                      tracks={
+                        artist["top_tracks"].length > 2
+                          ? [
+                              artist["top_tracks"][0]["name"],
+                              artist["top_tracks"][1]["name"],
+                              artist["top_tracks"][2]["name"],
+                            ]
+                          : null
+                      }
+                      image={
+                        artist["images"][0]
+                          ? artist["images"][0]["url"]
+                          : "./user.svg"
+                      }
+                    />
+                  )
                 )
-              )
+              : loadingList.map((number, index) => <LoadingArtist key={index} />)
+            : dataShown === "track"
+            ? trackResult.data
+              ? trackResult.data["search"]["tracks"]["items"].map(
+                  (track: any) => (
+                    <Track
+                      key={track["id"]}
+                      name={track["name"]}
+                      artist={track["artists"][0]["name"]}
+                      album={track["album"]["name"]}
+                      image={
+                        track["album"]["images"][0]
+                          ? track["album"]["images"][0]["url"]
+                          : "./user.svg"
+                      }
+                      preview={track["preview_url"]}
+                    />
+                  )
+                )
+              : loadingList.map((number, index) => <LoadingTrack key={index} />)
             : null}
-            {artistResult.loading? loadingList.map((number, index) => (<LoadingArtist key={index}/>)) : null}
-            {albumResult.loading? loadingList.map((number, index) => (<LoadingAlbum key={index}/>)) : null}
         </div>
       </div>
     </>

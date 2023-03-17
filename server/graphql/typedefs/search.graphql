@@ -1,6 +1,7 @@
-union SearchResponse = ArtistResponse | AlbumResponse
+union SearchResponse = ArtistResponse | AlbumResponse | TrackResponse
 
 enum SearchType {
     ARTIST
     ALBUM
+    TRACK
 }

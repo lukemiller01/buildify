@@ -7,9 +7,6 @@ interface Album {
 }
 
 const Album = ({ name, artist, image }: Album) => {
-  if (image === undefined) {
-    console.log(name);
-  }
   return (
     <div className=" flex flex-row gap-4">
       <div>

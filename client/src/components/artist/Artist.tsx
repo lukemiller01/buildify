@@ -7,9 +7,6 @@ interface Artist {
 }
 
 const Artist = ({ name, tracks, image }: Artist) => {
-  if (image === undefined) {
-    console.log(name);
-  }
   return (
     <div className=" flex flex-row gap-4">
       <div>

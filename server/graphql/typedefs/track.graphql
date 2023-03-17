@@ -8,3 +8,17 @@ type Track {
     album: Album
     duration_ms: Int
 }
+
+type TrackResults implements PagedResponse {
+    href:String
+    limit:Int
+    next:String
+    offset:Int
+    previous:String
+    total:Int
+    items: [Track]
+}
+
+type TrackResponse {
+    tracks: TrackResults
+}

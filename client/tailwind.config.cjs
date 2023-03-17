@@ -4,7 +4,11 @@ module.exports = {
     "./src/**/*.{ts,tsx}",
   ],
   theme: {
-    extend: {},
+    extend: {
+      opacity: {
+        '25': '.25',
+      }
+    },
     colors: {
       transparent: 'transparent',
       current: 'currentColor',
