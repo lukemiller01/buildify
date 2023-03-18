@@ -1,7 +1,9 @@
-import React, { useState, Fragment } from "react";
+import React, { useState, useEffect, Fragment } from "react";
 
-// GraphQL
-import { useLazyQuery } from "@apollo/client";
+// Apollo GraphQL Client
+import { client } from "../../main";
+import { CachePersistor } from 'apollo3-cache-persist';
+import { useLazyQuery, useQuery } from "@apollo/client";
 import {
   ARTIST_SEARCH,
   ALBUM_SEARCH,
@@ -31,13 +33,36 @@ const Home = () => {
   const [search, setSearch] = useState(""); // Sets the user's typed query
   const [selected, setSelected] = useState(selections[0]); // Sets the user's chosen search type
   const [dataShown, setDataShown] = useState(""); // Sets if the album or artist or track data should be shown
+  const [cached, setCached] = useState<any>(null);
 
   // Lazy query (on button click).
   const [getArtist, artistResult] = useLazyQuery(ARTIST_SEARCH);
   const [getAlbum, albumResult] = useLazyQuery(ALBUM_SEARCH);
   const [getTrack, trackResult] = useLazyQuery(TRACK_SEARCH);
 
+  const persistor = new CachePersistor({
+    cache: client.cache,
+    storage: window.localStorage,
+  });
+
+  useEffect(() => {
+    // client.clearStore();
+    // persistor.purge();
+
+    // If the cache has an artist search
+    if(Object.keys(client.cache.extract()).some(function(k){ return ~k.indexOf("Artist") })){
+      // Turn the key/value object into an array of objects
+      var dataArray = Object.keys(client.cache.extract()).map(function(k){return client.cache.extract()[k]});
+      // Remove the root query entry
+      dataArray.pop();
+      setCached(dataArray);
+      console.log(dataArray);
+    }
+  }, [])
+
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    client.clearStore();
+    persistor.purge();
     e.preventDefault();
     if (selected.type === "artist") {
       getArtist({ variables: { q: search, type: "ARTIST" } });
@@ -203,6 +228,28 @@ const Home = () => {
                 )
               : loadingList.map((number, index) => <LoadingTrack key={index} />)
             : null}
+            {cached? cached.map(
+                  (artist: any) => (
+                    <Artist
+                      key={artist["id"]}
+                      name={artist["name"]}
+                      tracks={
+                        artist["top_tracks"].length > 2
+                          ? [
+                              artist["top_tracks"][0]["name"],
+                              artist["top_tracks"][1]["name"],
+                              artist["top_tracks"][2]["name"],
+                            ]
+                          : null
+                      }
+                      image={
+                        artist["images"][0]
+                          ? artist["images"][0]["url"]
+                          : "./user.svg"
+                      }
+                    />
+                  )
+                ) : null}
         </div>
       </div>
     </>

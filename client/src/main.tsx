@@ -5,12 +5,19 @@ import App from "./App";
 
 // Apollo
 import { ApolloClient, InMemoryCache, ApolloProvider } from "@apollo/client";
-// import { persistCache, LocalStorageWrapper } from 'apollo3-cache-persist';
+import { persistCache, LocalStorageWrapper } from 'apollo3-cache-persist';
+
+const cache = new InMemoryCache();
+
+await persistCache({
+  cache,
+  storage: new LocalStorageWrapper(window.localStorage),
+});
 
 // Set up Apollo Client
-const client = new ApolloClient({
+export const client = new ApolloClient({
   uri: "http://localhost:5001/graphql",
-  cache: new InMemoryCache(),
+  cache: cache,
 });
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(

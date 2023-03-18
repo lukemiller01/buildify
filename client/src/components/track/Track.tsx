@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 
 // Hericons
 import { PlayIcon } from "@heroicons/react/24/outline";

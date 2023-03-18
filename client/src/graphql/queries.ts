@@ -6,7 +6,7 @@ import { gql } from "@apollo/client";
 // 3 images (small, medium, large) for the artist
 // ID, for adding keys to map functions
 export const ARTIST_SEARCH = gql`
-    query Search($q: String!, $type: SearchType!) {
+    query ARTIST_SEARCH($q: String!, $type: SearchType!) {
         search(q: $q, type: $type) {
             ... on ArtistResponse {
             artists {
@@ -31,7 +31,7 @@ export const ARTIST_SEARCH = gql`
 // Artist name
 // 3 images (small, medium, large) for the album
 export const ALBUM_SEARCH = gql`
-    query Query($q: String!, $type: SearchType!) {
+    query ALBUM_SEARCH($q: String!, $type: SearchType!) {
     search(q: $q, type: $type) {
         ... on AlbumResponse {
         albums {
@@ -60,7 +60,7 @@ export const ALBUM_SEARCH = gql`
 // Album name
 // Album image URL
 export const TRACK_SEARCH = gql`
-query Query($q: String!, $type: SearchType!) {
+query TRACK_SEARCH($q: String!, $type: SearchType!) {
     search(q: $q, type: $type) {
       ... on TrackResponse {
         tracks {
