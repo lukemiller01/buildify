@@ -1,9 +1,9 @@
+// Functional
 import React, { useState, useEffect, Fragment } from "react";
 
 // Apollo GraphQL Client
-import { client } from "../../main";
-import { CachePersistor } from 'apollo3-cache-persist';
-import { useLazyQuery, useQuery } from "@apollo/client";
+import { client, persistor } from "../../main"; // Client and persistor for caching
+import { useLazyQuery } from "@apollo/client"; // Lazy query for searching
 import {
   ARTIST_SEARCH,
   ALBUM_SEARCH,
@@ -33,35 +33,40 @@ const Home = () => {
   const [search, setSearch] = useState(""); // Sets the user's typed query
   const [selected, setSelected] = useState(selections[0]); // Sets the user's chosen search type
   const [dataShown, setDataShown] = useState(""); // Sets if the album or artist or track data should be shown
-  const [cached, setCached] = useState<any>(null);
+  const [cached, setCached] = useState<any>(null); // Cached object (for now, only 1 query at a time)
 
   // Lazy query (on button click).
   const [getArtist, artistResult] = useLazyQuery(ARTIST_SEARCH);
   const [getAlbum, albumResult] = useLazyQuery(ALBUM_SEARCH);
   const [getTrack, trackResult] = useLazyQuery(TRACK_SEARCH);
 
-  const persistor = new CachePersistor({
-    cache: client.cache,
-    storage: window.localStorage,
-  });
-
   useEffect(() => {
-    // client.clearStore();
-    // persistor.purge();
-
-    // If the cache has an artist search
-    if(Object.keys(client.cache.extract()).some(function(k){ return ~k.indexOf("Artist") })){
-      // Turn the key/value object into an array of objects
-      var dataArray = Object.keys(client.cache.extract()).map(function(k){return client.cache.extract()[k]});
-      // Remove the root query entry
-      dataArray.pop();
-      setCached(dataArray);
-      console.log(dataArray);
+    if (Object.keys(client.cache.extract()).length) { // If there's data in the cache
+      const re = new RegExp(/.+?(?=:)/);
+      const cacheType = Object.keys(client.cache.extract())[0].match(re)![0]; // Assert non null because a cache will always return one of the queries
+      var dataArray = Object.keys(client.cache.extract()).map(function (k) { // Set the data
+        return client.cache.extract()[k];
+      });
+      dataArray.pop(); // Remove the root query entry
+      setCached(dataArray); // Set the cached data
+      switch (cacheType) { // Set the data shown state
+        case "Album":
+          setDataShown("album");
+          break;
+        case "Artist":
+          setDataShown("artist");
+          break;
+        case "Track":
+          setDataShown("track");
+          break;
+        default:
+          break;
+      }
     }
-  }, [])
+  }, []);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-    client.clearStore();
+    client.clearStore(); // Cache and persistor reset on every search
     persistor.purge();
     e.preventDefault();
     if (selected.type === "artist") {
@@ -175,14 +180,27 @@ const Home = () => {
                       name={album["name"]}
                       artist={album["artists"][0]["name"]}
                       image={
-                        album["images"][0]
+                        album["images"]
                           ? album["images"][0]["url"]
                           : "./user.svg"
                       }
                     />
                   )
                 )
-              : loadingList.map((number, index) => <LoadingAlbum key={index} />)
+              : albumResult.loading
+              ? loadingList.map((number, index) => <LoadingAlbum key={index} />)
+              : cached
+              ? cached.map((album: any) => (
+                  <Album
+                    key={album["id"]}
+                    name={album["name"]}
+                    artist={album["artists"][0]["name"]}
+                    image={
+                      album["images"] ? album["images"][0]["url"] : "./user.svg"
+                    }
+                  />
+                ))
+              : null
             : dataShown === "artist"
             ? artistResult.data
               ? artistResult.data["search"]["artists"]["items"].map(
@@ -207,7 +225,30 @@ const Home = () => {
                     />
                   )
                 )
-              : loadingList.map((number, index) => <LoadingArtist key={index} />)
+              : artistResult.loading
+              ? loadingList.map((number, index) => (<LoadingArtist key={index} />))
+              : cached
+              ? cached.map((artist: any) => (
+                  <Artist
+                    key={artist["id"]}
+                    name={artist["name"]}
+                    tracks={
+                      artist["top_tracks"].length > 2
+                        ? [
+                            artist["top_tracks"][0]["name"],
+                            artist["top_tracks"][1]["name"],
+                            artist["top_tracks"][2]["name"],
+                          ]
+                        : null
+                    }
+                    image={
+                      artist["images"][0]
+                        ? artist["images"][0]["url"]
+                        : "./user.svg"
+                    }
+                  />
+                ))
+              : null
             : dataShown === "track"
             ? trackResult.data
               ? trackResult.data["search"]["tracks"]["items"].map(
@@ -226,30 +267,25 @@ const Home = () => {
                     />
                   )
                 )
-              : loadingList.map((number, index) => <LoadingTrack key={index} />)
+              : trackResult.loading
+              ? loadingList.map((number, index) => <LoadingTrack key={index} />)
+              : cached
+              ? cached.map((track: any) => (
+                  <Track
+                    key={track["id"]}
+                    name={track["name"]}
+                    artist={track["artists"][0]["name"]}
+                    album={track["album"]["name"]}
+                    image={
+                      track["album"]["images"][0]
+                        ? track["album"]["images"][0]["url"]
+                        : "./user.svg"
+                    }
+                    preview={track["preview_url"]}
+                  />
+                ))
+              : null
             : null}
-            {cached? cached.map(
-                  (artist: any) => (
-                    <Artist
-                      key={artist["id"]}
-                      name={artist["name"]}
-                      tracks={
-                        artist["top_tracks"].length > 2
-                          ? [
-                              artist["top_tracks"][0]["name"],
-                              artist["top_tracks"][1]["name"],
-                              artist["top_tracks"][2]["name"],
-                            ]
-                          : null
-                      }
-                      image={
-                        artist["images"][0]
-                          ? artist["images"][0]["url"]
-                          : "./user.svg"
-                      }
-                    />
-                  )
-                ) : null}
         </div>
       </div>
     </>
