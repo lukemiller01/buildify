@@ -1,8 +1,12 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef } from "react";
+
+// Style
+import './playStyle.css'
 
 // Hericons
 import { PlayIcon } from "@heroicons/react/24/outline";
 import { PauseIcon } from "@heroicons/react/20/solid";
+import { useSong } from "../../context/SongProvider";
 
 interface Track {
   name: string;
@@ -18,19 +22,21 @@ const Track = ({ name, artist, album, image, preview }: Track) => {
   const [audioAction, setAudioAction] = useState(true); // If the audio is playing or not
   const audioRef = useRef<HTMLAudioElement>(null); // Keep audio reference between renders
 
+  const { setSong, pauseSong } = useSong(); // Setting the song if user clicks play. Pausing song if user clicks pause.
+
   const startAudio = () => {
-    if (audioRef.current !== null) {
-      audioRef.current.play();
-    }
+    setSong(audioRef.current);
     setAudioAction(false);
   };
 
   const pauseAudio = () => {
-    if (audioRef.current !== null) {
-      audioRef.current.pause();
-    }
     setAudioAction(true);
+    pauseSong();
   };
+
+  function pauseTest() {
+    setAudioAction(true);
+  }
 
   return (
     <div className=" flex flex-row gap-4">
@@ -39,7 +45,7 @@ const Track = ({ name, artist, album, image, preview }: Track) => {
           className={`w-32 h-32 bg-cover bg-center`}
           style={{ backgroundImage: `url(${image})` }}
         >
-          <div className="h-full flex justify-center items-center backdrop-brightness-50 opacity-0 hover:opacity-100">
+          <div className={`h-full flex justify-center items-center backdrop-brightness-50 opacity-0 hover:opacity-100 ${audioAction ? '' : 'track__playing'}`}>
             <PlayIcon
               className="w-12 h-12 text-white"
               onClick={startAudio}
@@ -50,7 +56,7 @@ const Track = ({ name, artist, album, image, preview }: Track) => {
               onClick={pauseAudio}
               style={audioAction ? { display: "none" } : { display: "block" }}
             />
-            <audio ref={audioRef} src={preview} loop />
+            <audio ref={audioRef} src={preview} loop onPause={() => pauseTest()} />
           </div>
         </div>
       </div>

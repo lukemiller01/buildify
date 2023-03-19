@@ -16,8 +16,8 @@ const Artist = ({ name, tracks, image }: Artist) => {
         <h2>{name}</h2>
         <ol type="1" className=" text-white pl-12">
           {tracks
-            ? tracks.map((track) => (
-                <li key={track}>
+            ? tracks.map((track, index) => (
+                <li key={track + index}>
                   <p>{track}</p>
                 </li>
               ))
