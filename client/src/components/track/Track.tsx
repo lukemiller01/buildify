@@ -16,26 +16,36 @@ interface Track {
   preview: string;
 }
 
+// Sets type for SongContextProvider
+interface ContextObject {
+  song: HTMLAudioElement | undefined
+  setSong: (newSong: HTMLAudioElement) => void
+  pauseSong: () => void
+}
+
 // TODO: multiple clicks on pause/play button highlights text. Temporary fix is to remove user selection from text. Still want users to be able to highlight items.
 
 const Track = ({ name, artist, album, image, preview }: Track) => {
   const [audioAction, setAudioAction] = useState(true); // If the audio is playing or not
   const audioRef = useRef<HTMLAudioElement>(null); // Keep audio reference between renders
 
-  const { setSong, pauseSong } = useSong(); // Setting the song if user clicks play. Pausing song if user clicks pause.
+  const { setSong, pauseSong }: ContextObject = useSong(); // Setting the song if user clicks play. Pausing song if user clicks pause.
 
   const startAudio = () => {
-    setSong(audioRef.current);
-    setAudioAction(false);
+    if(audioRef.current) {
+      audioRef.current.currentTime = 0; // Resets the time on eveery play
+      setSong(audioRef.current); // Setting the song using context
+      setAudioAction(false); // Show the pause button
+    }
   };
 
   const pauseAudio = () => {
-    setAudioAction(true);
-    pauseSong();
+    pauseSong(); // Pause the song
+    setAudioAction(true); // Show the play button
   };
 
-  function pauseTest() {
-    setAudioAction(true);
+  function pause() {
+    setAudioAction(true); // Show the play button
   }
 
   return (
@@ -47,16 +57,16 @@ const Track = ({ name, artist, album, image, preview }: Track) => {
         >
           <div className={`h-full flex justify-center items-center backdrop-brightness-50 opacity-0 hover:opacity-100 ${audioAction ? '' : 'track__playing'}`}>
             <PlayIcon
-              className="w-12 h-12 text-white"
+              className="w-12 h-12 text-white cursor-pointer"
               onClick={startAudio}
               style={audioAction ? { display: "block" } : { display: "none" }}
             />
             <PauseIcon
-              className="w-12 h-12 text-white"
+              className="w-12 h-12 text-white cursor-pointer"
               onClick={pauseAudio}
               style={audioAction ? { display: "none" } : { display: "block" }}
             />
-            <audio ref={audioRef} src={preview} loop onPause={() => pauseTest()} />
+            <audio ref={audioRef} src={preview} loop onPause={() => pause()} />
           </div>
         </div>
       </div>
