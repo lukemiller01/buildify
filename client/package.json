@@ -7,7 +7,7 @@
     "dev": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview",
-    "test": "jest --watchAll --verbose --env=jsdom"
+    "test": "jest --watchAll --verbose --env=jsdom --coverage"
   },
   "dependencies": {
     "@apollo/client": "^3.7.10",

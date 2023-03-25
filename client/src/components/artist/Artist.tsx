@@ -14,7 +14,7 @@ const Artist = ({ name, tracks, image }: Artist) => {
       </div>
       <div className="flex flex-col">
         <h2>{name}</h2>
-        <ol type="1" className=" text-white pl-12">
+        <ol type="1" className=" text-white pl-12" aria-label="mapped-tracks">
           {tracks
             ? tracks.map((track, index) => (
                 <li key={track + index}>

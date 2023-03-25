@@ -17,7 +17,8 @@ const jestConfig: JestConfigWithTsJest = {
       },
     ],
   },
-  testEnvironment: 'jsdom'
+  testEnvironment: 'jsdom',
+  collectCoverage: true,
 }
 
 export default jestConfig

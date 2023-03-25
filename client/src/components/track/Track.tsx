@@ -44,9 +44,9 @@ const Track = ({ name, artist, album, image, preview }: Track) => {
     setAudioAction(true); // Show the play button
   };
 
-  function pause() {
+  const reset = () => {
     setAudioAction(true); // Show the play button
-  }
+  };
 
   return (
     <div className=" flex flex-row gap-4">
@@ -60,13 +60,15 @@ const Track = ({ name, artist, album, image, preview }: Track) => {
               className="w-12 h-12 text-white cursor-pointer"
               onClick={startAudio}
               style={audioAction ? { display: "block" } : { display: "none" }}
+              aria-label="play-icon"
             />
             <PauseIcon
               className="w-12 h-12 text-white cursor-pointer"
               onClick={pauseAudio}
               style={audioAction ? { display: "none" } : { display: "block" }}
+              aria-label="pause-icon"
             />
-            <audio ref={audioRef} src={preview} loop onPause={() => pause()} />
+            <audio ref={audioRef} src={preview} loop onPause={() => reset()} aria-label="audio-element" />
           </div>
         </div>
       </div>

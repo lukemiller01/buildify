@@ -1,6 +1,6 @@
 // Functional
 import React from "react";
-import ReactDOM from "react-dom/client";
+import ReactDOM, { createRoot } from "react-dom/client";
 import App from "./App";
 
 import fetch from 'cross-fetch';

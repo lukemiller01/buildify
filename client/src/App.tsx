@@ -4,9 +4,11 @@ import "./App.css";
 // Functional
 import { Routes, Route, BrowserRouter } from "react-router-dom";
 
+// Context
+import { SongContextProvider } from "./context/SongProvider";
+
 // Pages
 import { Home } from "./pages";
-import { SongContextProvider } from "./context/SongProvider";
 
 function App() {
   return (
